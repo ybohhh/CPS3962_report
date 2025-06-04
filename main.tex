@@ -1,0 +1,308 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{siunitx}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection.}{1em}{}
+\titleformat{\subsubsection}{\normalfont\bfseries}{\thesubsubsection.}{1em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Bo Yu}
+\lhead{CPS3962 Project Report}
+\rfoot{\thepage}
+
+\title{\textbf{AI and Big Data for Fraud Detection in Financial Systems: \\ An Object-Oriented Approach with Machine Learning}}
+\author{Bo Yu \\
+Student ID: 1194159 \\
+Instructor: Hamza Djigal \\
+Course: CPS3962}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Abstract}
+This project presents an intelligent fraud detection system that integrates machine learning with object-oriented software engineering principles to address the growing challenge of financial fraud. Leveraging a Random Forest classifier trained on real-world transaction data from Kaggle, the system achieves 88.8\% accuracy in identifying fraudulent activities. Key innovations include: (1) a modular object-oriented design implemented through UML-modeled components (Transaction, FraudDetector, Alert), (2) handling of class imbalance using Synthetic Minority Oversampling Technique (SMOTE), and (3) a relational database backend for traceability. The system demonstrates how object-oriented analysis and design (OOAD) principles can enhance the scalability and maintainability of AI-powered financial security solutions while maintaining detection efficacy.
+
+\section{Introduction}
+\subsection{Problem Context}
+The increasing volume of digital financial transactions introduces a growing threat of fraud. From online shopping to mobile banking, malicious activities have become more sophisticated and frequent. Traditional rule-based fraud systems struggle to adapt to dynamic patterns. Financial fraud has grown exponentially with digital transaction volumes, costing businesses over \$42 billion globally in 2023. Traditional rule-based systems fail to adapt to evolving fraud patterns due to their static nature. This project addresses three critical gaps:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Adaptability}: Machine learning models can learn dynamic fraud patterns
+    \item \textbf{Scalability}: Object-oriented design enables modular system expansion
+    \item \textbf{Imbalance}: Fraud cases typically comprise <0.5\% of transactions
+\end{itemize}
+
+\subsection{Solution Approach}
+The proposed system combines:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{AI Component}: Random Forest classifier with SMOTE oversampling
+    \item \textbf{Data Pipeline}: Python-based ETL with MySQL storage
+    \item \textbf{OO Architecture}: UML-modeled classes following SOLID principles
+\end{itemize}
+
+\section{System Architecture}
+
+\subsection{High-Level Design}
+The system is organized into a classic three-tier architecture, ensuring separation of concerns, scalability, and modularity in line with object-oriented design principles:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Data Layer}: 
+    This layer consists of a structured relational database implemented in \textbf{MySQL 8.0}. Two main tables—\texttt{CreditCardTransactions1} and \texttt{Alerts}—store preprocessed transaction data and detected fraud cases. The schema design follows normalization rules and enforces referential integrity using foreign keys.
+    
+    \item \textbf{Processing Layer}: 
+    This core logic layer is implemented using \textbf{Python 3.9}, where all data preprocessing, machine learning, database I/O, and business rules are encapsulated. OOAD principles are reflected through class-based design, with modules for \texttt{Transaction}, \texttt{FraudDetector}, and \texttt{AlertManager}. Fraud detection is performed using a trained Random Forest classifier, with synthetic data augmentation via \texttt{SMOTE}.
+    
+    \item \textbf{Presentation Layer}: 
+    Currently implemented as command-line and file-based outputs, this layer provides interaction endpoints for users (customers) and administrators. In future iterations, this can evolve into a full-stack web interface for real-time transaction submission, alert visualization, and administrative control.
+\end{enumerate}
+
+\subsection{Technology Stack}
+The following tools, frameworks, and libraries were used to implement the system. Each component was selected to support modular design, maintainability, and extensibility:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Component} & \textbf{Technology / Framework} \\ \midrule
+\textbf{Programming Language} & Python 3.11 \\
+\textbf{Data Processing} & \texttt{pandas}, \texttt{numpy}, \texttt{scikit-learn} \\
+\textbf{Machine Learning} & \texttt{RandomForestClassifier}, \texttt{SMOTE} (from imbalanced-learn) \\
+\textbf{Database} & MySQL 8.0 with InnoDB storage engine \\
+\textbf{Visualization \& Evaluation} & \texttt{matplotlib}, \texttt{seaborn}, \texttt{classification\_report} \\
+\textbf{Database Integration} & \texttt{mysql-connector-python} \\
+\textbf{UML Modeling} & Draw.io (Class, Sequence, and Use Case diagrams) \\
+\bottomrule
+\end{tabular}
+\caption{Technology stack used in system implementation}
+\end{table}
+
+\subsection{Design Principles Applied}
+\begin{itemize}
+    \item \textbf{Encapsulation}: Each logical module (e.g., fraud detection, alert generation) is isolated within its respective class.
+    \item \textbf{Modularity}: Transaction handling, classification, and reporting functionalities are decoupled, enabling maintainability.
+    \item \textbf{Reusability}: The Python-based architecture allows reusable preprocessing and modeling pipelines.
+    \item \textbf{Extensibility}: Easy to integrate APIs, dashboards, or enhanced models (e.g., XGBoost) in future iterations.
+\end{itemize}
+
+\section{Object-Oriented Design}
+
+This system is designed following OOAD principles, including abstraction, encapsulation, modularity, and reusability. The software architecture is structured around core classes that mirror real-world entities and responsibilities within a financial fraud detection domain.
+
+\subsection{UML Class Diagram}
+The UML class diagram (Fig. \ref{fig:class_diagram}) reflects high cohesion and low coupling among components. Each class is responsible for a distinct function:
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{Transaction}: Encapsulates transaction metadata such as time, amount, and anonymized PCA-based features (V1–V28), promoting data encapsulation and immutability.
+    \item \texttt{FraudDetector}: Encapsulates ML algorithms. Implements the \textbf{Strategy pattern}, allowing interchangeable classifiers such as RandomForest or Logistic Regression without changing system structure.
+    \item \texttt{AlertManager}: Responsible for creating and dispatching alerts. Utilizes the \textbf{Observer pattern} to notify administrators of suspected fraud events.
+    \item \texttt{Customer} and \texttt{Admin}: Represent different roles within the system, encapsulating different permissions and behaviors.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{image.png}
+\caption{UML class diagram showing relationships between core components}
+\label{fig:class_diagram}
+\end{figure}
+
+\subsection{Sequence Diagram}
+The sequence diagram (Fig. \ref{fig:sequence_diagram}) models the temporal flow of interactions between components when a transaction is processed. It emphasizes the runtime behavior of the system and reveals responsibility delegation:
+
+\begin{itemize}
+    \item The customer initiates a transaction.
+    \item The \texttt{Transaction} instance is passed to the \texttt{FraudDetector}.
+    \item If fraud is detected, \texttt{AlertManager} creates an alert and notifies the \texttt{Admin}.
+    \item The \texttt{Admin} reviews the alert and takes action (e.g., marking it as resolved).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{image1.png}
+\caption{Sequence diagram of fraud detection and alert resolution}
+\label{fig:sequence_diagram}
+\end{figure}
+
+\subsection{Use Case Diagram}
+The use case diagram (Fig. \ref{fig:use_case}) illustrates interactions between system actors and functionality:
+
+\begin{itemize}
+    \item \textbf{Customer}: Submits transactions, reviews fraud status.
+    \item \textbf{System}: Detects fraud automatically, creates alerts if suspicious.
+    \item \textbf{Admin}: Reviews alerts, updates their resolution status, and manages the detection pipeline.
+\end{itemize}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.75\textwidth]{image2.png}
+\caption{Use case diagram showing actor interactions with the system}
+\label{fig:use_case}
+\end{figure}
+
+\subsection{Design Patterns Applied}
+The system incorporates several classical object-oriented design patterns (Table \ref{tab:patterns}) to improve maintainability and flexibility:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lp{0.75\textwidth}@{}}
+\toprule
+\textbf{Pattern} & \textbf{Application} \\ \midrule
+Strategy & Enables model interchange (RandomForest, SVM, LogisticRegression) within \texttt{FraudDetector} \\
+Observer & \texttt{AlertManager} notifies subscribers (e.g., Admin) when fraud is detected \\
+Factory & Abstracts creation of \texttt{Transaction} and \texttt{Alert} instances based on input conditions \\
+Singleton & Manages MySQL connection to ensure only one connection instance is used \\
+\bottomrule
+\end{tabular}
+\caption{Object-oriented design patterns implementation}
+\label{tab:patterns}
+\end{table}
+
+\subsection{Conclusion}
+These diagrams collectively demonstrate a strong OOAD-based design. Class relationships maintain low coupling and high cohesion, behavioral interactions are clearly structured, and use cases are well-scoped. Design patterns further decouple dependencies and enhance future scalability.
+
+
+\section{Data Pipeline}
+\subsection{Database Schema}
+The schema (Fig. \ref{fig:er_diagram}) enforces ACID properties through:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{CreditCardTransactions}: 31 columns including auto-increment PK
+    \item \textbf{Alerts}: Status tracking (Pending/Resolved) with timestamps
+    \item \textbf{Users}: Role-based access control (RBAC) implementation
+\end{itemize}
+
+\subsection{Data Preprocessing}
+Key steps before model training:
+\begin{enumerate}[leftmargin=*]
+    \item Standard scaling: $\frac{x - \mu}{\sigma}$ for all numerical features
+    \item SMOTE oversampling to achieve 1:3 fraud/non-fraud ratio
+    \item 80/20 stratified train-test split
+\end{enumerate}
+
+\section{Machine Learning Model}
+\subsection{Algorithm Selection}
+Random Forest was chosen for:
+\begin{itemize}[leftmargin=*]
+    \item Native handling of high-dimensional data (28 PCA features)
+    \item Robustness to feature scaling
+    \item Interpretability via feature importance
+\end{itemize}
+
+\subsection{Hyperparameter Tuning}
+Grid search yielded optimal parameters:
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\ \midrule
+n\_estimators & 100 \\
+max\_depth & 10 \\
+min\_samples\_split & 5 \\
+class\_weight & balanced \\
+\bottomrule
+\end{tabular}
+\caption{Optimized Random Forest parameters}
+\end{table}
+
+\subsection{Performance Evaluation}
+
+The trained Random Forest classifier was evaluated on a test set of 1,500 samples. Due to the high imbalance in fraud vs. non-fraud cases, the model achieves high accuracy overall, but exhibits limited recall and precision on the fraud class. Table~\ref{tab:classification} summarizes the classification report.
+
+\begin{table}
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Metric} & \textbf{Non-Fraud (0)} & \textbf{Fraud (1)} \\ \midrule
+Precision       & 0.98                   & 0.02               \\
+Recall          & 0.90                   & 0.10               \\
+F1-score        & 0.94                   & 0.03               \\
+Support         & 1470                   & 30                 \\ \midrule
+\textbf{Accuracy} & \multicolumn{2}{c}{88.8\%} \\
+\textbf{Macro Avg F1-score} & \multicolumn{2}{c}{0.49} \\
+\bottomrule
+\end{tabular}
+\caption{Classification report on the test set ($n = 1500$)}
+\label{tab:classification}
+\end{table}
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{image3.png}
+\caption{Confusion matrix showing predicted vs. actual classes}
+\label{fig:confusion}
+\end{figure}
+
+As evident from the confusion matrix (Fig.~\ref{fig:confusion}), the model performs well on normal transactions but struggles to detect rare fraudulent cases. This is expected due to the significant class imbalance in the original dataset. Only 2\% of frauds were correctly identified.
+
+\subsubsection*{Challenges}
+\begin{itemize}
+    \item \textbf{Data Imbalance}: With only 30 fraud samples out of 1500, model performance is biased toward the majority class.
+    \item \textbf{Precision-Recall Tradeoff}: Achieving higher fraud detection recall often reduces precision, increasing false positives.
+\end{itemize}
+
+\subsubsection*{Recommendations}
+To improve fraud detection performance:
+\begin{itemize}
+    \item Incorporate data augmentation techniques such as \texttt{SMOTE} or \texttt{ADASYN}.
+    \item Use cost-sensitive learning or ensemble methods like XGBoost.
+    \item Introduce threshold tuning to balance precision-recall.
+    \item Collect more representative fraud samples or simulate realistic ones.
+\end{itemize}
+
+
+\section{Conclusion and Future Work}
+
+\subsection{Key Achievements}
+\begin{itemize}[leftmargin=*]
+    \item Successfully applied OOAD principles to a real-world AI project, demonstrated through class diagrams, sequence diagrams, and use case modeling.
+    \item Developed a modular fraud detection pipeline integrating Python, MySQL, and UML-based architecture.
+    \item Built a scalable system with separate concerns—transaction handling, fraud classification, and alert management—aligned with object-oriented best practices.
+    \item Achieved an overall accuracy of \textbf{88.8\%} on a highly imbalanced dataset using Random Forest; results show strong detection of normal cases, but with scope for enhancing rare class performance.
+\end{itemize}
+
+\subsection{Limitations and Improvements}
+While the system presents a strong foundation, several areas remain open for enhancement (Table~\ref{tab:roadmap}):
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{@{}lp{0.6\textwidth}@{}}
+\toprule
+\textbf{Limitation} & \textbf{Proposed Solution} \\ \midrule
+Class imbalance leads to low fraud recall & Apply SMOTE, adjust threshold, or use cost-sensitive classifiers \\
+Batch processing only & Integrate streaming tools (e.g., Apache Kafka or Python generators) \\
+Model is static & Implement retraining or online learning for continuous updates \\
+No frontend interface & Develop a lightweight dashboard (e.g., with Streamlit or Flask + Bootstrap) \\
+Lack of real-time alerting & Add event-driven notifications for flagged transactions \\
+\bottomrule
+\end{tabular}
+\caption{Roadmap for future system enhancements}
+\label{tab:roadmap}
+\end{table}
+
+\subsection{Future Directions}
+\begin{itemize}[leftmargin=*]
+    \item Improve fraud detection by testing alternative models (e.g., XGBoost, LightGBM) and tuning class thresholds.
+    \item Expand dataset diversity or synthetically generate more realistic fraud examples for model robustness.
+    \item Refactor current codebase into a full OO Python module using design patterns (Strategy, Singleton, Observer).
+    \item Extend system into a full-stack application with REST API and alerting tools for production deployment.
+\end{itemize}
+
+\vspace{1em}
+\noindent \textit{In conclusion, this project demonstrates the power of combining AI with object-oriented design for fraud detection, while laying a practical path for future scalability, real-time monitoring, and production readiness.}
+
+
+\bibliographystyle{ieeetr}
+
+
+\end{document}
