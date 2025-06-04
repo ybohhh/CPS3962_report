@@ -11,7 +11,7 @@ This repository contains the full project for AI-Based Financial Fraud Detection
 
 ## 🔧 Technologies Used
 
-- Python 3.9
+- Python 3.11
 - MySQL 8.0
 - scikit-learn, pandas
 - LaTeX (Overleaf)
